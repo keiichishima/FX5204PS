@@ -35,22 +35,22 @@ class FX5204PS(threading.Thread):
     def __init__(self, update_interval=5):
         super(FX5204PS, self).__init__()
         self._stop_event = threading.Event()
+        self._lock = threading.Lock()
+        self._update_interval = datetime.timedelta(seconds=update_interval)
+        self._last_sumup_time = datetime.datetime(1970,1,1)
         self._count = 0
         self._last_temp_check = 0
-        self._device = self._find_device()
         self._firmware_version = [0, 0]
         self._serial_number = 0
         self._endpoint = None
-        self._initialize()
         self._temperature = 0
         self._frequency = 0
         self._voltage = 0
         self._wattage = [0,0,0,0]
         self._wattage_max = [0,0,0,0]
         self._wattage_avg = [0,0,0,0]
-        self._lock = threading.Lock()
-        self._update_interval = datetime.timedelta(seconds=update_interval)
-        self._last_sumup_time = datetime.datetime(1970,1,1)
+        self._device = self._find_device()
+        self._initialize()
 
     @property
     def firmware_version(self):
@@ -63,7 +63,7 @@ class FX5204PS(threading.Thread):
     @property
     def temperature(self):
         with self._lock:
-            return self._temperature / 100
+            return self._temperature / 10000
 
     @property
     def frequency(self):
@@ -128,6 +128,7 @@ class FX5204PS(threading.Thread):
                 self._update_wattage_avg()
                 self._update_frequency()
                 self._update_voltage()
+                self._update_temperature()
                 self._last_sumup_time = now
 
     def _update_wattage(self):
@@ -176,6 +177,13 @@ class FX5204PS(threading.Thread):
         with self._lock:
             self._voltage = volt
 
+    def _update_temperature(self):
+        data = self._device.ctrl_transfer(IN_VENDOR_DEVICE,
+                                          CMD_GET_TEMP, 0, 0, 2)
+        (temp,) = struct.unpack('!H', data)
+        with self._lock:
+            self._temperature = temp + 273150
+
 if __name__ == '__main__':
     import time
 
@@ -188,6 +196,7 @@ if __name__ == '__main__':
             time.sleep(1)
             print('Volt:  {0}V'.format(fx.voltage))
             print('Freq:  {0}Hz'.format(fx.frequency))
+            print('Temp:  {0}C'.format(fx.temperature))
             print('Watt:  {0}W@0, {1}W@1, {2}W@2, {3}W@3'.format(*fx.wattage))
             print('(Avg): {0}W@0, {1}W@1, {2}W@2, {3}W@3'.format(*fx.wattage_avg))
             print('(Max): {0}W@0, {1}W@1, {2}W@2, {3}W@3'.format(*fx.wattage_max))
