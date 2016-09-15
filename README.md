@@ -1,20 +1,20 @@
-= Fujitsu Component FX5204PS Smart Power Strip module =
+# Fujitsu Component FX5204PS Smart Power Strip module
 
-== Overview ==
+## Overview
 
 This software contains the Python module to access Fujitsu Component
 FX5204PS Smart Power Strip.  The module uses the
-[PyUSB][https://walac.github.io/pyusb/] package to access or retrieve
+[PyUSB](https://walac.github.io/pyusb/) package to access or retrieve
 information from the smart power strip.
 
-The code was written based on the `usps` driver shipped with OpenBSD.
+The code was written based on the ``usps`` driver shipped with OpenBSD.
 I greatly appreciates the original driver author Yojiro UO for
 suggestions he gave me while I was struggling to read the code.
 
 
-== Usage ==
+## Usage
 
-'''python
+```python
 import time
 
 import fx5204ps
@@ -34,21 +34,21 @@ try:
 except KeyboardInterrupt:
     fx.stop()
     fx.join()
-'''
+```
 
 
-== Code ==
+## Code
 
 The source code is available at
 https://github.com/keiichishima/FX5204PS
 
 
-== Bug Reports ==
+## Bug Reports
 
 Please submit bug reports or patches through the GitHub interfaces.
 
 
-== Author ==
+## Author
 
 Keiichi SHIMA
 / IIJ Innovation Institute Inc.
