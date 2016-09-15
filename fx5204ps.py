@@ -92,6 +92,7 @@ class FX5204PS(threading.Thread):
 
     def stop(self):
         self._stop_event.set()
+        self.join()
 
     def _find_device(self):
         dev = usb.core.find(idVendor=VENDOR_FUJITSUCOMP,
@@ -192,4 +193,3 @@ if __name__ == '__main__':
             print('(Max): {0}W@0, {1}W@1, {2}W@2, {3}W@3'.format(*fx.wattage_max))
     except KeyboardInterrupt:
         fx.stop()
-        fx.join()
