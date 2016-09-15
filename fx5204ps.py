@@ -125,7 +125,7 @@ class FX5204PS(threading.Thread):
             now = datetime.datetime.now()
             self._update_wattage()
             if (now - self._last_sumup_time > self._update_interval):
-                self._update_wattage_max_avg()
+                self._update_wattage_avg()
                 self._update_frequency()
                 self._update_voltage()
                 self._last_sumup_time = now
@@ -145,7 +145,7 @@ class FX5204PS(threading.Thread):
                                      for i in range(len(wattage))]
         self._count += 1
 
-    def _update_wattage_max_avg(self):
+    def _update_wattage_avg(self):
         with self._lock:
             self._wattage_avg = [(self._wattage[i]
                                   + (self._wattage_avg[i] * self._count))
@@ -189,7 +189,7 @@ if __name__ == '__main__':
             print('Volt:  {0}V'.format(fx.voltage))
             print('Freq:  {0}Hz'.format(fx.frequency))
             print('Watt:  {0}W@0, {1}W@1, {2}W@2, {3}W@3'.format(*fx.wattage))
-            print('(Avg): {0}W@0, {1}W@1, {2}W@3, {3}W@3'.format(*fx.wattage_avg))
+            print('(Avg): {0}W@0, {1}W@1, {2}W@2, {3}W@3'.format(*fx.wattage_avg))
             print('(Max): {0}W@0, {1}W@1, {2}W@2, {3}W@3'.format(*fx.wattage_max))
     except KeyboardInterrupt:
         fx.stop()

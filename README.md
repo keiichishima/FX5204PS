@@ -29,7 +29,7 @@ try:
         print('Volt:  {0}V'.format(fx.voltage))
         print('Freq:  {0}Hz'.format(fx.frequency))
         print('Watt:  {0}W@0, {1}W@1, {2}W@2, {3}W@3'.format(*fx.wattage))
-        print('(Avg): {0}W@0, {1}W@1, {2}W@3, {3}W@3'.format(*fx.wattage_avg))
+        print('(Avg): {0}W@0, {1}W@1, {2}W@2, {3}W@3'.format(*fx.wattage_avg))
         print('(Max): {0}W@0, {1}W@1, {2}W@2, {3}W@3'.format(*fx.wattage_max))
 except KeyboardInterrupt:
     fx.stop()
