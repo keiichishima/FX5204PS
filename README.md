@@ -47,6 +47,11 @@ https://github.com/keiichishima/FX5204PS
 Please submit bug reports or patches through the GitHub interfaces.
 
 
+## Contributor
+
+Yojiro UO, https://github.com/yojiro
+
+
 ## Author
 
 Keiichi SHIMA
