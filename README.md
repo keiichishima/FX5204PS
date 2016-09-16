@@ -8,7 +8,7 @@ FX5204PS Smart Power Strip.  The module uses the
 information from the smart power strip.
 
 The code was written based on the ``usps`` driver shipped with OpenBSD.
-I greatly appreciates the original driver author Yojiro UO for
+I greatly appreciate the original driver author Yojiro UO for
 suggestions he gave me while I was struggling to read the code.
 
 

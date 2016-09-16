@@ -32,14 +32,13 @@ MODE_WATTAGE = 0x10
 MODE_CURRENT = 0x30
 
 class FX5204PS(threading.Thread):
-    def __init__(self, update_interval=5):
+    def __init__(self, sumup_interval=5):
         super(FX5204PS, self).__init__()
         self._stop_event = threading.Event()
         self._lock = threading.Lock()
-        self._update_interval = datetime.timedelta(seconds=update_interval)
+        self._sumup_interval = datetime.timedelta(seconds=sumup_interval)
         self._last_sumup_time = datetime.datetime(1970,1,1)
         self._count = 0
-        self._last_temp_check = 0
         self._firmware_version = [0, 0]
         self._serial_number = 0
         self._endpoint = None
@@ -124,12 +123,12 @@ class FX5204PS(threading.Thread):
         while not self._stop_event.is_set():
             now = datetime.datetime.now()
             self._update_wattage()
-            if (now - self._last_sumup_time > self._update_interval):
-                self._update_wattage_avg()
+            if (now - self._last_sumup_time > self._sumup_interval):
                 self._update_frequency()
                 self._update_voltage()
                 self._update_temperature()
                 self._last_sumup_time = now
+                self._count = 0
 
     def _update_wattage(self):
         data = self._endpoint.read(16)
@@ -137,22 +136,17 @@ class FX5204PS(threading.Thread):
         with self._lock:
             self._wattage = wattage
             if self._count == 0:
-                self._wattage_avg = copy.copy(wattage)
                 self._wattage_max = copy.copy(wattage)
             else:
                 self._wattage_max = [self._wattage_max[i]
                                      if self._wattage_max[i] > wattage[i]
                                      else wattage[i]
                                      for i in range(len(wattage))]
-        self._count += 1
-
-    def _update_wattage_avg(self):
-        with self._lock:
             self._wattage_avg = [(self._wattage[i]
                                   + (self._wattage_avg[i] * self._count))
                                  // (self._count + 1)
                                  for i in range(len(self._wattage))]
-        self._count = 0
+        self._count += 1
 
     def _update_frequency(self):
         data = self._device.ctrl_transfer(IN_VENDOR_DEVICE,
