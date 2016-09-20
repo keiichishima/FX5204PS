@@ -91,8 +91,10 @@ class Graph(object):
             self._scale = 1.0
 
 def draw_graph(fx):
+    pygame.init()
     pygame.display.set_caption('FX5204PS Status')
     screen = pygame.display.set_mode(SCREEN_SIZE)
+    font = pygame.font.SysFont(None, 24)
     graphs = []
     for i in range(4):
         graphs.append(Graph(screen,
@@ -109,6 +111,15 @@ def draw_graph(fx):
             graphs[i].update(watt[i], watt_avg[i], watt_max[i])
             graphs[i].draw()
 
+        freq = fx.frequency
+        volt = fx.voltage
+        temp = fx.temperature
+        status_text = font.render(
+            'Volt:{0} V, Freq: {1} Hz, Temp: {2} C'.format(
+                volt, freq, temp),
+            True, WHITE)
+        screen.blit(status_text, (0, 0))
+
         pygame.display.update()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -117,9 +128,5 @@ def draw_graph(fx):
 if __name__ == '__main__':
     fx = FX5204PS(sumup_interval=10)
     fx.start()
-
-    pygame.init()
-
     draw_graph(fx)
-
     fx.stop()
