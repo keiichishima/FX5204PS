@@ -32,11 +32,12 @@ MODE_WATTAGE = 0x10
 MODE_CURRENT = 0x30
 
 class FX5204PS(threading.Thread):
-    def __init__(self, sumup_interval=5):
+    def __init__(self, sumup_interval=5, ema_alpha=0.1):
         super(FX5204PS, self).__init__()
         self._stop_event = threading.Event()
         self._lock = threading.Lock()
         self._sumup_interval = datetime.timedelta(seconds=sumup_interval)
+        self._ema_alpha = ema_alpha
         self._last_sumup_time = datetime.datetime(1970,1,1)
         self._count = 0
         self._firmware_version = [0, 0]
@@ -142,9 +143,8 @@ class FX5204PS(threading.Thread):
                                      if self._wattage_max[i] > wattage[i]
                                      else wattage[i]
                                      for i in range(len(wattage))]
-            self._wattage_avg = [(self._wattage[i]
-                                  + (self._wattage_avg[i] * self._count))
-                                 // (self._count + 1)
+            self._wattage_avg = [self._wattage[i] * self._ema_alpha
+                                 + self._wattage_avg[i] * (1.0-self._ema_alpha)
                                  for i in range(len(self._wattage))]
         self._count += 1
 
