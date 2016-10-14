@@ -93,6 +93,7 @@ class Graph(object):
 def draw_graph(fx):
     pygame.init()
     pygame.display.set_caption('FX5204PS Status')
+    clock = pygame.time.Clock()
     screen = pygame.display.set_mode(SCREEN_SIZE)
     font = pygame.font.SysFont(None, 24)
     graphs = []
@@ -102,6 +103,7 @@ def draw_graph(fx):
                             i))
 
     while True:
+        clock.tick(10)
         screen.fill(BLACK)
 
         watt = fx.wattage
